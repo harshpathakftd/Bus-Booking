@@ -112,7 +112,9 @@ const HomePage = () => {
 
   const submit = (e) => {
     e.preventDefault();
-    navigate(`/buses?source=${form.source}&destination=${form.destination}`);
+    navigate(
+      `/buses?source=${encodeURIComponent(form.source)}&destination=${encodeURIComponent(form.destination)}&date=${encodeURIComponent(form.date)}&passengers=${form.passengers}`
+    );
   };
 
   return (

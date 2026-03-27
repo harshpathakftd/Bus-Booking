@@ -6,6 +6,10 @@ const BusListingPage = () => {
   const [searchParams] = useSearchParams();
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("price");
+  const [maxPrice, setMaxPrice] = useState(4000);
+  const [boardingPoint, setBoardingPoint] = useState("");
+  const [droppingPoint, setDroppingPoint] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -24,33 +28,188 @@ const BusListingPage = () => {
     load();
   }, [searchParams]);
 
+  const source = searchParams.get("source") || "Delhi";
+  const destination = searchParams.get("destination") || "Jaipur";
+  const date = searchParams.get("date") || "Today";
+  const passengers = searchParams.get("passengers") || "1";
+  const boardingOptions = ["Majestic", "Silk Board", "Anand Rao Circle", "Electronic City"];
+  const droppingOptions = ["Miyapur", "Ameerpet", "Kukatpally", "LB Nagar"];
+
+  const filteredBuses = buses.filter((bus) => {
+    const withinPrice = Number(bus.fare || 0) <= maxPrice;
+    const hasBoarding = !boardingPoint || (bus.boardingPoints || []).includes(boardingPoint);
+    const hasDropping = !droppingPoint || (bus.droppingPoints || []).includes(droppingPoint);
+    return withinPrice && hasBoarding && hasDropping;
+  });
+
+  const sortedBuses = [...filteredBuses].sort((a, b) => {
+    if (sortBy === "price") return a.fare - b.fare;
+    if (sortBy === "rating") return (b.rating || 4.2) - (a.rating || 4.2);
+    if (sortBy === "departure") return (a.departureTime || "").localeCompare(b.departureTime || "");
+    return 0;
+  });
+
   return (
-    <section className="card">
-      <div className="section-head">
-        <h2>Available Buses</h2>
-        <p className="muted">Pick a bus and continue to seat selection.</p>
-      </div>
-      {loading && <p className="muted">Loading buses...</p>}
-      {!loading && buses.length === 0 && <p className="muted">No buses found.</p>}
-      <div className="list">
-        {buses.map((bus) => (
-          <article key={bus._id} className="list-item">
-            <div className="list-main">
-              <h3>{bus.name}</h3>
-              <p className="muted">
-                {bus.source} to {bus.destination}
-              </p>
-              <small>{bus.departureTime} - {bus.arrivalTime}</small>
+    <section className="bus-results-page">
+      <aside className="bus-filter-panel">
+        <div className="filter-head">
+          <strong>Filters</strong>
+          <button
+            type="button"
+            onClick={() => {
+              setMaxPrice(4000);
+              setBoardingPoint("");
+              setDroppingPoint("");
+              setSortBy("price");
+            }}
+          >
+            Clear all
+          </button>
+        </div>
+
+        <div className="filter-block">
+          <p>Bus Type</p>
+          <div className="filter-grid">
+            {["AC", "Sleeper", "Seater", "Non AC", "Semi Sleeper", "Luxury"].map((item) => (
+              <button key={item} type="button" className="filter-chip">
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-block">
+          <p>Departure Time</p>
+          <div className="time-grid">
+            {["Before 9 AM", "9 AM - 5 PM", "5 PM - 11 PM", "After 11 PM"].map((time) => (
+              <button key={time} type="button" className="time-chip">
+                {time}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="filter-block">
+          <p>Price Range</p>
+          <div className="price-range-wrap">
+            <input
+              type="range"
+              min="300"
+              max="5000"
+              step="50"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(Number(e.target.value))}
+              className="price-range"
+            />
+            <div className="price-range-values">
+              <span>Rs 300</span>
+              <strong>Up to Rs {maxPrice}</strong>
             </div>
-            <div className="list-side">
-              <span className="type-pill">{bus.type}</span>
-              <strong className="fare">Rs {bus.fare}</strong>
-              <Link to={`/seat/${bus._id}`} className="primary-link">
-                Select Seats
-              </Link>
-            </div>
-          </article>
-        ))}
+          </div>
+        </div>
+
+        <div className="filter-block">
+          <p>Boarding Point</p>
+          <select value={boardingPoint} onChange={(e) => setBoardingPoint(e.target.value)}>
+            <option value="">All Boarding Points</option>
+            {boardingOptions.map((point) => (
+              <option key={point} value={point}>
+                {point}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-block">
+          <p>Dropping Point</p>
+          <select value={droppingPoint} onChange={(e) => setDroppingPoint(e.target.value)}>
+            <option value="">All Dropping Points</option>
+            {droppingOptions.map((point) => (
+              <option key={point} value={point}>
+                {point}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="filter-block">
+          <p>Popular Boarding Points</p>
+          <div className="point-list">
+            {["Majestic", "Silk Board", "Anand Rao Circle", "Electronic City"].map((point) => (
+              <span key={point}>{point}</span>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      <div className="bus-results-content">
+        <div className="results-top-strip">
+          {["Women Friendly", "Live Tracking", "Free Cancellation", "Up to 15% Off"].map((chip) => (
+            <span key={chip}>{chip}</span>
+          ))}
+        </div>
+
+        <div className="results-route-card">
+          <div>
+            <h2>
+              {source} to {destination}
+            </h2>
+            <p>
+              {date} • {passengers} passenger{Number(passengers) > 1 ? "s" : ""} • Pick a bus and
+              continue to seat selection.
+            </p>
+          </div>
+          <div className="sort-wrap">
+            <label>Sort by</label>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="price">Price</option>
+              <option value="rating">Rating</option>
+              <option value="departure">Departure Time</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="popular-filter-bar">
+          <strong>Popular Filters:</strong>
+          <div>
+            {["Majestic", "Marathahalli", "Silk Board", "Tin Factory", "Yeshwantpur"].map((f) => (
+              <span key={f}>{f}</span>
+            ))}
+          </div>
+        </div>
+
+        {loading && <p className="muted">Loading buses...</p>}
+        {!loading && sortedBuses.length === 0 && (
+          <p className="muted">No buses found for selected filters.</p>
+        )}
+
+        <div className="bus-results-list">
+          {sortedBuses.map((bus) => (
+            <article key={bus._id} className="bus-result-card">
+              <div className="bus-main">
+                <h3>{bus.name}</h3>
+                <p className="muted">
+                  {bus.source} to {bus.destination}
+                </p>
+                <div className="bus-meta">
+                  <span>{bus.departureTime}</span>
+                  <span>{bus.arrivalTime}</span>
+                  <span>{bus.type}</span>
+                </div>
+              </div>
+
+              <div className="bus-right">
+                <p>
+                  From <strong>Rs {bus.fare}</strong>
+                </p>
+                <small>{Math.max(0, (bus.totalSeats || 40) - (bus.bookedSeats?.length || 0))} Seats left</small>
+                <Link to={`/seat/${bus._id}`} className="primary-link">
+                  View Buses
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
