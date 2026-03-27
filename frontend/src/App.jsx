@@ -6,6 +6,7 @@ import PassengerPage from "./pages/PassengerPage";
 import PaymentPage from "./pages/PaymentPage";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AuthPage from "./pages/AuthPage";
 
 const App = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="/payment/:bookingId" element={<PaymentPage />} />
           <Route path="/confirmation/:bookingId" element={<ConfirmationPage />} />
           <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/auth" element={<AuthPage />} />
         </Routes>
       </main>
     </div>

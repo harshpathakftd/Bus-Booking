@@ -55,6 +55,14 @@ const AutoSuggestField = ({ label, value, placeholder, options, onChange }) => {
 const HomePage = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("register");
+  const [authForm, setAuthForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  });
   const cityOptions = [
     "Delhi",
     "Jaipur",
@@ -135,9 +143,16 @@ const HomePage = () => {
             <a href="#!">My Bookings</a>
             <a href="#!">Offer</a>
             <a href="#!">Help</a>
-            <a href="#!" className="menu-cta">
+            <button
+              type="button"
+              className="menu-cta menu-cta-btn"
+              onClick={() => {
+                setAuthMode("register");
+                setAuthOpen(true);
+              }}
+            >
               Login/Register
-            </a>
+            </button>
           </nav>
         </div>
 
@@ -229,6 +244,87 @@ const HomePage = () => {
 
         </div>
       </section>
+
+      {authOpen && (
+        <div className="auth-modal-overlay" onClick={() => setAuthOpen(false)}>
+          <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="auth-close"
+              onClick={() => setAuthOpen(false)}
+              aria-label="Close auth modal"
+            >
+              ×
+            </button>
+
+            <div className="auth-modal-left">
+              <img src="/images/wall.png" alt="Travel background" />
+            </div>
+
+            <div className="auth-modal-right">
+              <h3>{authMode === "register" ? "Create an account" : "Welcome back"}</h3>
+              <p className="auth-sub">
+                {authMode === "register" ? "Already have an account?" : "New here?"}{" "}
+                <button
+                  type="button"
+                  className="auth-switch"
+                  onClick={() =>
+                    setAuthMode((prev) => (prev === "register" ? "login" : "register"))
+                  }
+                >
+                  {authMode === "register" ? "Log in" : "Create account"}
+                </button>
+              </p>
+
+              <form className="auth-modal-form" onSubmit={(e) => e.preventDefault()}>
+                {authMode === "register" && (
+                  <div className="auth-name-grid">
+                    <input
+                      placeholder="First name"
+                      value={authForm.firstName}
+                      onChange={(e) =>
+                        setAuthForm({ ...authForm, firstName: e.target.value })
+                      }
+                    />
+                    <input
+                      placeholder="Last name"
+                      value={authForm.lastName}
+                      onChange={(e) =>
+                        setAuthForm({ ...authForm, lastName: e.target.value })
+                      }
+                    />
+                  </div>
+                )}
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={authForm.email}
+                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                />
+                <input
+                  type="password"
+                  placeholder={authMode === "register" ? "Enter your password" : "Password"}
+                  value={authForm.password}
+                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                />
+
+                {authMode === "register" && (
+                  <label className="auth-terms">
+                    <input type="checkbox" />
+                    <span>
+                      I agree to the <a href="#!">Terms & Conditions</a>
+                    </span>
+                  </label>
+                )}
+
+                <button type="submit" className="auth-submit-btn">
+                  {authMode === "register" ? "Create account" : "Login"}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="feature-section">
         <div className="feature-inner">
