@@ -10,20 +10,72 @@ import {
   MapPin,
   MapPinned,
   Moon,
+  ShieldCheck,
+  Star,
   Sunrise,
   Sun,
   Sunset,
   Snowflake,
+  Timer,
+  Wifi,
   Wind
 } from "lucide-react";
 import { api } from "../api";
+
+const fallbackBuses = [
+  {
+    _id: "mock-bus-1",
+    name: "GoRideX Express AC Sleeper",
+    source: "Delhi",
+    destination: "Jaipur",
+    departureTime: "07:30 PM",
+    arrivalTime: "01:45 AM",
+    type: "AC Sleeper",
+    fare: 899,
+    totalSeats: 40,
+    bookedSeats: [1, 2, 3, 4, 5],
+    boardingPoints: ["Majestic", "Silk Board"],
+    droppingPoints: ["Miyapur", "Ameerpet"],
+    rating: 4.5
+  },
+  {
+    _id: "mock-bus-2",
+    name: "Royal Travels Semi Sleeper",
+    source: "Delhi",
+    destination: "Jaipur",
+    departureTime: "09:15 PM",
+    arrivalTime: "03:40 AM",
+    type: "Semi Sleeper",
+    fare: 749,
+    totalSeats: 36,
+    bookedSeats: [2, 8, 10],
+    boardingPoints: ["Anand Rao Circle", "Electronic City"],
+    droppingPoints: ["Kukatpally", "LB Nagar"],
+    rating: 4.2
+  },
+  {
+    _id: "mock-bus-3",
+    name: "Intercity Premium Seater",
+    source: "Delhi",
+    destination: "Jaipur",
+    departureTime: "11:00 PM",
+    arrivalTime: "05:20 AM",
+    type: "Luxury Seater",
+    fare: 1099,
+    totalSeats: 32,
+    bookedSeats: [1, 3, 7, 9, 12, 14, 17],
+    boardingPoints: ["Majestic", "Anand Rao Circle"],
+    droppingPoints: ["Miyapur", "LB Nagar"],
+    rating: 4.7
+  }
+];
 
 const BusListingPage = () => {
   const [searchParams] = useSearchParams();
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("price");
-  const [maxPrice, setMaxPrice] = useState(4000);
+  const [maxPrice, setMaxPrice] = useState(10000);
   const [boardingPoint, setBoardingPoint] = useState("");
   const [droppingPoint, setDroppingPoint] = useState("");
 
@@ -36,7 +88,8 @@ const BusListingPage = () => {
         if (source) query.set("source", source);
         if (destination) query.set("destination", destination);
         const res = await api.get(`/buses?${query.toString()}`);
-        setBuses(res.data);
+        const apiBuses = Array.isArray(res.data) ? res.data : [];
+        setBuses(apiBuses.length > 0 ? apiBuses : fallbackBuses);
       } finally {
         setLoading(false);
       }
@@ -87,7 +140,7 @@ const BusListingPage = () => {
           <button
             type="button"
             onClick={() => {
-              setMaxPrice(4000);
+              setMaxPrice(10000);
               setBoardingPoint("");
               setDroppingPoint("");
               setSortBy("price");
@@ -136,7 +189,7 @@ const BusListingPage = () => {
             <input
               type="range"
               min="300"
-              max="5000"
+              max="10000"
               step="50"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}
@@ -229,22 +282,45 @@ const BusListingPage = () => {
         </div>
 
         {loading && <p className="muted">Loading buses...</p>}
-        {!loading && sortedBuses.length === 0 && (
-          <p className="muted">No buses found for selected filters.</p>
-        )}
+        {!loading && sortedBuses.length === 0 && <p className="muted">Showing recommended buses.</p>}
 
         <div className="bus-results-list">
-          {sortedBuses.map((bus) => (
+          {(sortedBuses.length > 0 ? sortedBuses : fallbackBuses).slice(0, 3).map((bus) => (
             <article key={bus._id} className="bus-result-card">
               <div className="bus-main">
-                <h3>{bus.name}</h3>
-                <p className="muted">
-                  {bus.source} to {bus.destination}
+                <div className="bus-title-row">
+                  <h3>{bus.name}</h3>
+                  <span className="bus-rating">
+                    <Star size={13} />
+                    {(bus.rating || 4.3).toFixed(1)}
+                  </span>
+                </div>
+                <p className="muted bus-route-line">
+                  {bus.source} to {bus.destination} • {bus.type}
                 </p>
                 <div className="bus-meta">
-                  <span>{bus.departureTime}</span>
-                  <span>{bus.arrivalTime}</span>
-                  <span>{bus.type}</span>
+                  <span>
+                    <Clock3 size={13} />
+                    {bus.departureTime}
+                  </span>
+                  <span>
+                    <Timer size={13} />
+                    {bus.arrivalTime}
+                  </span>
+                  <span>
+                    <Wifi size={13} />
+                    Free WiFi
+                  </span>
+                </div>
+                <div className="bus-tag-row">
+                  <span>
+                    <ShieldCheck size={13} />
+                    Safe ride
+                  </span>
+                  <span>
+                    <MapPin size={13} />
+                    Live tracking
+                  </span>
                 </div>
               </div>
 

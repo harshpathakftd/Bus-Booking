@@ -932,6 +932,34 @@ button {
   color: #0f172a;
 }
 
+.bus-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bus-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.bus-rating svg {
+  color: #ef4444;
+}
+
+.bus-route-line {
+  margin-top: 2px;
+}
+
 .bus-meta {
   margin-top: 8px;
   display: flex;
@@ -943,15 +971,48 @@ button {
   border: 1px solid #cbd5e1;
   background: #f8fbff;
   color: #475569;
-  padding: 4px 8px;
+  padding: 5px 8px;
   border-radius: 999px;
   font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bus-meta span svg {
+  color: #ef4444;
+}
+
+.bus-tag-row {
+  margin-top: 8px;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.bus-tag-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  border: 1px dashed #bfdbfe;
+  background: linear-gradient(90deg, #eff6ff 0%, #fff1f2 100%);
+  color: #1e3a8a;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.bus-tag-row svg {
+  color: #ef4444;
 }
 
 .bus-right {
   display: grid;
   justify-items: end;
-  gap: 8px;
+  gap: 9px;
+  padding-left: 16px;
+  border-left: 1px solid #e2e8f0;
 }
 
 .bus-right p {
@@ -2142,6 +2203,8 @@ button {
   .bus-right {
     width: 100%;
     justify-items: start;
+    padding-left: 0;
+    border-left: 0;
   }
 
   .destinations-grid {
