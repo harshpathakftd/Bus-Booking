@@ -1,5 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import {
+  Armchair,
+  BedDouble,
+  BusFront,
+  Clock3,
+  Crown,
+  IndianRupee,
+  MapPin,
+  MapPinned,
+  Moon,
+  Sunrise,
+  Sun,
+  Sunset,
+  Snowflake,
+  Wind
+} from "lucide-react";
 import { api } from "../api";
 
 const BusListingPage = () => {
@@ -32,6 +48,20 @@ const BusListingPage = () => {
   const destination = searchParams.get("destination") || "Jaipur";
   const date = searchParams.get("date") || "Today";
   const passengers = searchParams.get("passengers") || "1";
+  const busTypeOptions = [
+    { label: "AC", icon: Snowflake },
+    { label: "Sleeper", icon: BedDouble },
+    { label: "Seater", icon: Armchair },
+    { label: "Non AC", icon: Wind },
+    { label: "Semi Sleeper", icon: BusFront },
+    { label: "Luxury", icon: Crown }
+  ];
+  const departureOptions = [
+    { label: "Before 9 AM", icon: Sunrise },
+    { label: "9 AM - 5 PM", icon: Sun },
+    { label: "5 PM - 11 PM", icon: Sunset },
+    { label: "After 11 PM", icon: Moon }
+  ];
   const boardingOptions = ["Majestic", "Silk Board", "Anand Rao Circle", "Electronic City"];
   const droppingOptions = ["Miyapur", "Ameerpet", "Kukatpally", "LB Nagar"];
 
@@ -68,29 +98,40 @@ const BusListingPage = () => {
         </div>
 
         <div className="filter-block">
-          <p>Bus Type</p>
+          <p className="filter-title">
+            <BusFront size={15} />
+            <span>Bus Type</span>
+          </p>
           <div className="filter-grid">
-            {["AC", "Sleeper", "Seater", "Non AC", "Semi Sleeper", "Luxury"].map((item) => (
-              <button key={item} type="button" className="filter-chip">
-                {item}
+            {busTypeOptions.map((item) => (
+              <button key={item.label} type="button" className="filter-chip filter-chip-icon">
+                <item.icon size={13} />
+                <span>{item.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div className="filter-block">
-          <p>Departure Time</p>
+          <p className="filter-title">
+            <Clock3 size={15} />
+            <span>Departure Time</span>
+          </p>
           <div className="time-grid">
-            {["Before 9 AM", "9 AM - 5 PM", "5 PM - 11 PM", "After 11 PM"].map((time) => (
-              <button key={time} type="button" className="time-chip">
-                {time}
+            {departureOptions.map((time) => (
+              <button key={time.label} type="button" className="time-chip time-chip-icon">
+                <time.icon size={13} />
+                <span>{time.label}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div className="filter-block">
-          <p>Price Range</p>
+          <p className="filter-title">
+            <IndianRupee size={15} />
+            <span>Price Range</span>
+          </p>
           <div className="price-range-wrap">
             <input
               type="range"
@@ -109,7 +150,10 @@ const BusListingPage = () => {
         </div>
 
         <div className="filter-block">
-          <p>Boarding Point</p>
+          <p className="filter-title">
+            <MapPin size={15} />
+            <span>Boarding Point</span>
+          </p>
           <select value={boardingPoint} onChange={(e) => setBoardingPoint(e.target.value)}>
             <option value="">All Boarding Points</option>
             {boardingOptions.map((point) => (
@@ -121,7 +165,10 @@ const BusListingPage = () => {
         </div>
 
         <div className="filter-block">
-          <p>Dropping Point</p>
+          <p className="filter-title">
+            <MapPinned size={15} />
+            <span>Dropping Point</span>
+          </p>
           <select value={droppingPoint} onChange={(e) => setDroppingPoint(e.target.value)}>
             <option value="">All Dropping Points</option>
             {droppingOptions.map((point) => (
@@ -133,7 +180,10 @@ const BusListingPage = () => {
         </div>
 
         <div className="filter-block">
-          <p>Popular Boarding Points</p>
+          <p className="filter-title">
+            <MapPin size={15} />
+            <span>Popular Boarding Points</span>
+          </p>
           <div className="point-list">
             {["Majestic", "Silk Board", "Anand Rao Circle", "Electronic City"].map((point) => (
               <span key={point}>{point}</span>
