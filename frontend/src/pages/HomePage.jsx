@@ -258,7 +258,7 @@ const HomePage = () => {
             </button>
 
             <div className="auth-modal-left">
-              <img src="/images/wall.png" alt="Travel background" />
+              <img src="/images/buses.jpg" alt="Login background" />
             </div>
 
             <div className="auth-modal-right">
